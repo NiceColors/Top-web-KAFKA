@@ -1,0 +1,28 @@
+# Arquivos de log
+logs/
+
+# Arquivos de dependências
+node_modules/
+
+# Arquivos de configuração locais
+.env
+
+# Arquivos de build
+build/
+
+# Arquivos de cache
+.cache/
+
+# Arquivos de cobertura de código
+coverage/
+
+# Arquivos de configuração de IDEs
+.idea/
+.vscode/
+
+# Arquivos temporários
+*.log
+*.tmp
+
+# Arquivos de backup
+*.bak
