@@ -2,7 +2,7 @@ const { Kafka, Partitioners } = require('kafkajs');
 const axios = require('axios');
 
 const kafka = new Kafka({
-    clientId: 'my-app',
+    clientId: 'top-web',
     brokers: ['kafka:29092']
 });
 
@@ -10,23 +10,30 @@ const producer = kafka.producer({
     createPartitioner: Partitioners.LegacyPartitioner
 });
 
-const topic = 'test-topic';
+const topic = 'searchs';
+
+
+const examples = [
+    'UFRRJ', 'Web', 'Banco de Dados', 'Linguagem Natural', 'KAFKA',
+]
 
 const produceMessage = async () => {
-
-
     try {
+
         await producer.connect();
+
         const response = await axios.get('https://serpapi.com/search.json?', {
             params: {
                 engine: 'google',
                 q: 'UFRRJ',
-                api_key: ''
+                api_key: '2b2d8777551446eebc72adad724eb95aa87e117450c6567f0c903f964e03b101'
             }
         });
 
+
         if (typeof response.data === 'object') {
-            const message = JSON.stringify(response.data);
+            const organic_results = response.data.organic_results;
+            const message = JSON.stringify(organic_results);
             await producer.send({
                 topic,
                 messages: [{ value: message }]
@@ -39,27 +46,16 @@ const produceMessage = async () => {
     } catch (error) {
         console.error('Erro ao fazer a requisição para a API ou ao enviar a mensagem:', error);
     } finally {
-    }
-
-    try {
-
-        await producer.send({
-            topic,
-            messages: [
-                { value: 'Teste' },
-            ],
-        });
-    } catch (error) {
-        console.error('Erro ao enviar a mensagem:', error);
-    } finally {
         await producer.disconnect();
     }
 
 };
 
-produceMessage().catch(console.error);
+examples.forEach(async (example) => {
+    await produceMessage(example);
+});
 
-const consumer = kafka.consumer({ groupId: 'test-group' });
+const consumer = kafka.consumer({ groupId: 'top-web' });
 
 const consumeMessage = async () => {
     try {
